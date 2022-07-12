@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta
 import pandas as pd
-import xlrd
+import requests
 
 def nextDateIfSaturadyAndMonday(data: datetime):
     if data.weekday() == 5:
@@ -13,9 +13,15 @@ def main(event, prazoDias):
     startDate = date.today()
     endDate = date.today() + timedelta(days=prazoDias)
 
-    feriadosNacionais = pd.read_excel("C:/Trabalho/feriados_nacionais.xls")
+    url = "https://www.anbima.com.br/feriados/arqs/feriados_nacionais.xls"
+    r = requests.get(url, verify=False)
+    open('temp.xls', 'wb').write(r.content)
+    feriadosNacionais = pd.read_excel('temp.xls')
+
     datasFeriados = feriadosNacionais['Data']
-    feriadosAcimaHoje = [data for data in datasFeriados if data >= startDate and data <= endDate]
+    datasFeriados.drop(datasFeriados.tail(9).index, inplace=True)
+
+    feriadosAcimaHoje = [data for data in datasFeriados if data.date() >= startDate and data.date() <= endDate]
 
     datas = []
     for i in range(prazoDias+1):
