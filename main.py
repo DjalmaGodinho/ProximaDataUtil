@@ -5,7 +5,7 @@ import requests
 def nextDateIfSaturadyAndMonday(data: datetime):
     if data.weekday() == 5:
         return data + timedelta(days=2)
-    if endDate.weekday() == 6:    
+    if data.weekday() == 6:    
         return data + timedelta(days=1)
     return data
 
